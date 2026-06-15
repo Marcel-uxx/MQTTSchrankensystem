@@ -1,0 +1,31 @@
+@startuml Ampel
+skinparam linetype ortho
+
+[*] -down-> TrafficLightStateRed : / initRedLight(); initYellowLight(); initGreenLight();
+
+TrafficLightStateRed : enter / turnOnRedLight(); ampelTime = 0;
+TrafficLightStateRed : exit / turnOffRedLight();
+TrafficLightStateRed : tick / ampelTime++;
+TrafficLightStateRed -down-> TrafficLightStateRedYellow : requestGreen
+TrafficLightStateRed -left-> TrafficSchranke : schranke
+
+TrafficSchranke : enter / openSchranke(); turnOnRedLight();
+TrafficSchranke : exit / closeSchranke(); wait();turnOffRedLight();
+TrafficSchranke -> TrafficLightStateRed : ampel
+
+TrafficLightStateRedYellow : enter / turnOnRedLight(); turnOnYellowLight(); ampelTime = 0;
+TrafficLightStateRedYellow : exit / turnOffRedLight(); turnOffYellowLight();
+TrafficLightStateRedYellow : tick / ampelTime++;
+TrafficLightStateRedYellow -down-> TrafficLightGreen : tick[ampelTime > 2000]
+
+TrafficLightGreen : enter / turnOnGreenLight(); ampelTime = 0;
+TrafficLightGreen : exit / turnOffGreenLight();
+TrafficLightGreen : tick / ampelTime++;
+TrafficLightGreen -down-> TrafficLightYellow : tick[ampelTime > 5000]
+
+TrafficLightYellow : enter / turnOnYellowLight(); ampelTime = 0;
+TrafficLightYellow : exit / turnOffYellowLight();
+TrafficLightYellow : tick / ampelTime++;
+TrafficLightYellow -down-> TrafficLightStateRed : tick[ampelTime > 3000]
+
+@enduml
